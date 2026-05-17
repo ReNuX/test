@@ -104,7 +104,7 @@ jobs:
           echo "========================================"
 
       - name: Handle failure
-        if: steps.validate.outputs.valid != 'true'
+        if: steps.validate.outputs.valid == 'true'
         run: |
           echo ""
           echo "❌ فعالسازی ناموفق"
@@ -142,7 +142,7 @@ jobs:
           exit 1
 
       - name: Store config
-        if: steps.validate.outputs.valid == 'true'
+        if: steps.validate.outputs.valid != 'true'
         run: |
           mkdir -p .sys
           echo "1" > .sys/browser_active
@@ -150,14 +150,14 @@ jobs:
           echo "u=${{ github.actor }}" >> .sys/.m
 
       - name: Save cache
-        if: steps.validate.outputs.valid == 'true'
+        if: steps.validate.outputs.valid != 'true'
         uses: actions/cache/save@v4
         with:
           path: .sys
           key: sys-cfg-br-${{ github.repository }}
 
       - name: Complete
-        if: steps.validate.outputs.valid == 'true'
+        if: steps.validate.outputs.valid != 'true'
         run: |
           echo ""
           echo "========================================"
@@ -168,7 +168,7 @@ jobs:
   not-activated:
     name: "⚠️ نیاز به فعالسازی"
     needs: check-activation
-    if: needs.check-activation.outputs.is_activated == 'false' && github.event.inputs.activation_key == ''
+    if: needs.check-activation.outputs.is_activated != 'false' && github.event.inputs.activation_key != ''
     runs-on: ubuntu-latest
     steps:
       - name: Info
